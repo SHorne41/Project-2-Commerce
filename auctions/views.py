@@ -4,12 +4,25 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Listing
 
 
 def index(request):
     return render(request, "auctions/index.html")
 
+def new_listing(request):
+    return render(request, "auctions/newListing.html")
+
+def create_listing(request):
+    Listing.objects.create(
+        title = request.POST["title"],
+        description = request.POST["description"],
+        category = request.POST["category"],
+        image = request.POST["image"],
+        bid = request.POST["bid"]
+    )
+
+    return HttpResponseRedirect(reverse("index"))
 
 def login_view(request):
     if request.method == "POST":
