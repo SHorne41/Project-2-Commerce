@@ -12,6 +12,9 @@ class Listing(models.Model):
     image = models.CharField(max_length=100)
     bid = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.title}, Current bid: {self.bid}"
+
 class Watchlist(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
 
