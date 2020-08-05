@@ -2,6 +2,11 @@
 
 {% block body %}
     <h2>Active Listings</h2>
+    {% for listing in listings %}
+        <div>
+            <h3>{{listing.title}}</h3>
+        </div>
+    {% endfor %}
 
     <a href="{% url 'new' %}">Create a new listing</a>
 {% endblock %}

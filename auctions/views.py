@@ -8,7 +8,9 @@ from .models import User, Listing
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    listingsList = Listing.objects.all()
+    context = {"listings": listingsList}
+    return render(request, "auctions/index.html", context)
 
 def new_listing(request):
     return render(request, "auctions/newListing.html")
