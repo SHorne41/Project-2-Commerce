@@ -2,10 +2,14 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    {% for listing in listings %}
-        <div>
-            <h3>{{listing.title}}</h3>
-        </div>
-    {% endfor %}
+    <div class="list-group">
+        {% for listing in listings %}
+            <div class="list-group-item">
+                <h3>{{listing.title}} -- ${{listing.bid}}</h3>
+                <img src="{{listing.image}}">
+                <p>{{listing.description}}</p>
+            </div>
+        {% endfor %}
+    </div>
 
 {% endblock %}
