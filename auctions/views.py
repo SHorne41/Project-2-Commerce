@@ -4,12 +4,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Watchlist
 
 
 def index(request):
     listingsList = Listing.objects.all()
-    context = {"listings": listingsList}
+    context = {"title": "Active Listings", "listings": listingsList}
     return render(request, "auctions/index.html", context)
 
 def new_listing(request):
@@ -32,6 +32,13 @@ def listing_view(request, title):
     context = {"listing": currentListing}
 
     return render(request, "auctions/listing.html", context)
+
+def watchlist(request, username):
+    userID = User.objects.get(username=username).pk
+    watchListItems = Watchlist.objects.get(user = userID).listing.all()
+    context = {"title": "Watchlist", "listings": watchListItems}
+
+    return render(request, "auctions/index.html", context)
 
 def login_view(request):
     if request.method == "POST":
