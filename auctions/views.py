@@ -26,6 +26,12 @@ def create_listing(request):
 
     return HttpResponseRedirect(reverse("index"))
 
+def listing_view(request, title):
+    currentListing = Listing.objects.get(title=title)
+    context = {"listing": currentListing}
+
+    return render(request, "auctions/listing.html", context)
+
 def login_view(request):
     if request.method == "POST":
 
