@@ -15,13 +15,14 @@ def index(request):
 def new_listing(request):
     return render(request, "auctions/newListing.html")
 
-def create_listing(request):
+def create_listing(request, username):
     Listing.objects.create(
         title = request.POST["title"],
         description = request.POST["description"],
         category = request.POST["category"],
         image = request.POST["image"],
-        bid = request.POST["bid"]
+        bid = request.POST["bid"],
+        owner = User.objects.get(username=username)
     )
 
     return HttpResponseRedirect(reverse("index"))

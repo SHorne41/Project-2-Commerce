@@ -11,6 +11,7 @@ class Listing(models.Model):
     category = models.CharField(max_length=64)
     image = models.CharField(max_length=100)
     bid = models.IntegerField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.title}, Current bid: {self.bid}"
