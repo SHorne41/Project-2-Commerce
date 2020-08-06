@@ -6,7 +6,7 @@
         {% for listing in listings %}
             <div class="list-group-item">
                 <img style="width: 200px; height: 200px; float: left; margin: 50px;" src="{{listing.image}}">
-                <h3><a href="{% url 'listing' {{listing.title}} %}">{{listing.title}}</a></h3>
+                <h3><a href="{% url 'listing' listing.title %}">{{listing.title}}</a></h3>
                 <br/>
                 <h4>Price: ${{listing.bid}}</h4>
                 <br/>
