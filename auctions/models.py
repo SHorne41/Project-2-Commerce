@@ -17,7 +17,8 @@ class Listing(models.Model):
         return f"{self.title}, Current bid: {self.bid}"
 
 class Watchlist(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    listing = models.ManyToManyField(Listing)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Comments(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
