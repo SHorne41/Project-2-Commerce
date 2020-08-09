@@ -40,6 +40,10 @@ def watchlist(request, username):
 
     return render(request, "auctions/index.html", context)
 
+def add_to_watchlist(request, username):
+
+    return HttpResponseRedirect(reverse("watchlist", args=[username]))
+
 def login_view(request):
     if request.method == "POST":
 
