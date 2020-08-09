@@ -40,8 +40,12 @@ def watchlist(request, username):
 
     return render(request, "auctions/index.html", context)
 
-def add_to_watchlist(request, username):
+def add_to_watchlist(request, username, title):
+    listingItem = Listing.objects.get(title = title).pk
+    userID = User.objects.get(username=username).pk
+    userWatchlist = Watchlist.objects.get(user = userID)
 
+    userWatchlist.listing.add(listingItem)
     return HttpResponseRedirect(reverse("watchlist", args=[username]))
 
 def login_view(request):

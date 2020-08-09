@@ -2,8 +2,9 @@
 
 {% block body %}
 
-<h2>Listing: {{listing.title}}</h2>
-<form action="{% url 'add' user.username %}">
+    <h2>Listing: {{listing.title}}</h2>
+<form action="{% url 'add' user.username listing.title %}" method="POST">
+    {% csrf_token %}
     <button type="submit">Add to Watchlist</button><br/>
 </form>
 <img style="width: 200px; height: 200px; margin: 20px;" src="{{listing.image}}">
