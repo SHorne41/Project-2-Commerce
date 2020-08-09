@@ -12,8 +12,10 @@ def index(request):
     context = {"title": "Active Listings", "listings": listingsList}
     return render(request, "auctions/index.html", context)
 
+
 def new_listing(request):
     return render(request, "auctions/newListing.html")
+
 
 def create_listing(request, username):
     Listing.objects.create(
@@ -27,11 +29,13 @@ def create_listing(request, username):
 
     return HttpResponseRedirect(reverse("index"))
 
+
 def listing_view(request, title):
     currentListing = Listing.objects.get(title=title)
     context = {"listing": currentListing}
 
     return render(request, "auctions/listing.html", context)
+
 
 def watchlist(request, username):
     userID = User.objects.get(username=username).pk
@@ -40,13 +44,20 @@ def watchlist(request, username):
 
     return render(request, "auctions/index.html", context)
 
+
 def add_to_watchlist(request, username, title):
     listingItem = Listing.objects.get(title = title).pk
     userID = User.objects.get(username=username).pk
     userWatchlist = Watchlist.objects.get(user = userID)
-
     userWatchlist.listing.add(listingItem)
+
     return HttpResponseRedirect(reverse("watchlist", args=[username]))
+
+def remove_from_watchlist(request, username, title):
+
+
+    return HttpResponseRedirect(reverse("watchlist", args=[username]))
+
 
 def login_view(request):
     if request.method == "POST":
