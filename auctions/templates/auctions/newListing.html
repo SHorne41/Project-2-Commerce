@@ -6,25 +6,9 @@
 
 <h1 style="text-align: center;">Create a Listing</h1>
 
-<form id="new-listing" action="{% url 'create' user.username %}" method="POST">
-{% csrf_token %}
-    <h2>Title</h2>
-    <textarea name="title" rows= "1" cols="80" placeholder="Add title here..." required></textarea>
-
-    <h2>Description</h2>
-    <textarea name="description" rows="8" cols="80" placeholder="Add item description here..." required></textarea>
-
-    <h2>Category</h2>
-    <textarea name="category" rows="1" cols="80" placeholder="Add item cateogry here..."></textarea>
-
-    <h2>Image</h2>
-    <textarea name="image" rows="1" cols="80" placeholder="Add image URL here..."></textarea>
-
-    <h2>Starting bid</h2>
-    <input type="number" name="bid" min="0" placeholder="Add starting bid here..." required></input>
-
-    <br/><br/>
-
+<form id="new-listing" action="{% url 'create' %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_ul }}
     <button style="position: absolute; left: 45%;" type="submit">Create Lisiting!</button><br/>
 </form>
 

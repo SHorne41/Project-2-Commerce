@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Listing, Watchlist
+from .forms import ListingForm
 
 
 def index(request):
@@ -13,19 +14,23 @@ def index(request):
     return render(request, "auctions/index.html", context)
 
 
-def new_listing(request):
-    return render(request, "auctions/newListing.html")
+def newForm(request):
+    newListingForm = ListingForm(initial={'owner': request.user})
+    context = {'form': newListingForm}
+
+    return render(request, "auctions/newListing.html", context)
 
 
-def create_listing(request, username):
-    Listing.objects.create(
-        title = request.POST["title"],
-        description = request.POST["description"],
-        category = request.POST["category"],
-        image = request.POST["image"],
-        bid = request.POST["bid"],
-        owner = User.objects.get(username=username)
-    )
+def createNewListing(request):
+    if request.method == 'POST':
+        user = request.user
+        newListingForm = ListingForm(request.POST, initial={
+            'owner': user.id
+        })
+        if newListingForm.is_valid():
+            newListing = newListingForm.save()      #This line creates a new Listing object, passing in the data from the fields in the form
+        else:
+            print("Object not created")
 
     return HttpResponseRedirect(reverse("index"))
 
@@ -38,7 +43,8 @@ def listing_view(request, title):
 
 
 def watchlist(request, username):
-    userID = User.objects.get(username=username).pk
+    user = request.user
+    userID = User.objects.get(username=user).pk
     watchListItems = Watchlist.objects.get(user = userID).listing.all()
     context = {"title": "Watchlist", "listings": watchListItems}
 
