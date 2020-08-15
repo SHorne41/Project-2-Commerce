@@ -40,8 +40,6 @@ def listing_view(request, title):
     userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
     isWatching = False                                          # Used for context
 
-    print(userWatchlist.listing.filter(title=title))
-
     #Determine if the item is on the current user's watchlist
     if userWatchlist.listing.filter(title=title):
         isWatching = True
@@ -51,22 +49,21 @@ def listing_view(request, title):
     return render(request, "auctions/listing.html", context)
 
 
-def watchlist(request, username):
-    user = request.user
-    userID = User.objects.get(username=user).pk
+def watchlist(request):
+    userID = User.objects.get(username = request.user).pk
     watchListItems = Watchlist.objects.get(user = userID).listing.all()
     context = {"title": "Watchlist", "listings": watchListItems}
 
     return render(request, "auctions/index.html", context)
 
 
-def add_to_watchlist(request, username, title):
+def add_to_watchlist(request, title):
     listingItem = Listing.objects.get(title = title).pk
-    userID = User.objects.get(username=username).pk
+    userID = User.objects.get(username = request.user).pk
     userWatchlist = Watchlist.objects.get(user = userID)
     userWatchlist.listing.add(listingItem)
 
-    return HttpResponseRedirect(reverse("watchlist", args=[username]))
+    return HttpResponseRedirect(reverse("watchlist"))
 
 def remove_from_watchlist(request, title):
     listingItem = Listing.objects.get(title = title).pk
@@ -74,7 +71,7 @@ def remove_from_watchlist(request, title):
     userWatchlist = Watchlist.objects.get(user = userID)
     userWatchlist.listing.remove(listingItem)
 
-    return HttpResponseRedirect(reverse("watchlist", args=[request.user]))
+    return HttpResponseRedirect(reverse("watchlist"))
 
 
 def login_view(request):

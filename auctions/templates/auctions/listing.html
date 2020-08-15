@@ -6,7 +6,7 @@
 
 {% if user.is_authenticated %}
     {% if watching == False %}
-        <form action="{% url 'add' user.username listing.title %}" method="POST">
+        <form action="{% url 'add' listing.title %}" method="POST">
             {% csrf_token %}
             <button type="submit">Add to Watchlist</button><br/>
         </form>
