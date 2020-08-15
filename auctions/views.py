@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Listing, Watchlist
-from .forms import ListingForm
+from .forms import ListingForm, BidForm
 
 
 def index(request):
@@ -24,9 +24,7 @@ def newForm(request):
 def createNewListing(request):
     if request.method == 'POST':
         user = request.user
-        newListingForm = ListingForm(request.POST, initial={
-            'owner': user.id
-        })
+        newListingForm = ListingForm(request.POST, initial={'owner': user.id})
         if newListingForm.is_valid():
             newListing = newListingForm.save()      #This line creates a new Listing object, passing in the data from the fields in the form
         else:
@@ -48,22 +46,30 @@ def listing_view(request, title):
         if userWatchlist.listing.filter(title=title):
             isWatching = True
 
-    context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner}
+    #Create bidForm and pass in context
+    newBidForm = BidForm(initial={'user': request.user})
+
+    context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner, "form": newBidForm}
 
     return render(request, "auctions/listing.html", context)
 
 def place_bid(request, title):
-    currentListing = Listing.objects.get(title=title)
-    currentBid = currentListing.currentBid
-    pendingBid = request.POST["bid"]
+    if request.method == 'POST':
+        currentListing = Listing.objects.get(title=title)
+        currentBid = currentListing.currentBid
+        newBidForm = BidForm(request.POST, initial={'user': request.user.id})
 
-    #Check to see if new bid is greater than current bid
-    if int(pendingBid) <= currentBid:
-        #throw Error
-        return HttpResponseRedirect(reverse("listing", args=[title]))  #Remove after error code is inserted
-    else:
-        currentListing.bid = pendingBid
-        currentListing.save()
+        if newBidForm.is_valid():
+            newBidData = newBidForm.cleaned_data
+            #Check to see if new bid is greater than current bid
+            print(newBidData['bidAmount'])
+            if newBidData['bidAmount'] <= currentBid:
+                #throw Error
+                return HttpResponseRedirect(reverse("listing", args=[title]))  #Remove after error code is inserted
+            else:
+                currentListing.currentBid = newBidData['bidAmount']
+                currentListing.save()
+                newBid = newBidForm.save()
 
     return HttpResponseRedirect(reverse("listing", args=[title]))
 

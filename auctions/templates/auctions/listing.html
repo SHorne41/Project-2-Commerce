@@ -33,7 +33,7 @@
 {% if owner == False %}
     <form action="{% url 'bid' listing.title %}" method="POST">
         {% csrf_token %}
-        <input type="number" name="bid" value="{{listing.bid}}">
+        {{ form }}
         <button type="submit">Place bid</button>
     </form>
 {% endif %}
