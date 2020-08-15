@@ -36,8 +36,17 @@ def createNewListing(request):
 
 
 def listing_view(request, title):
-    currentListing = Listing.objects.get(title=title)
-    context = {"listing": currentListing}
+    currentListing = Listing.objects.get(title=title)           # Listing to be displayed
+    userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
+    isWatching = False                                          # Used for context
+
+    print(userWatchlist.listing.filter(title=title))
+
+    #Determine if the item is on the current user's watchlist
+    if userWatchlist.listing.filter(title=title):
+        isWatching = True
+
+    context = {"listing": currentListing, "watching" : isWatching}
 
     return render(request, "auctions/listing.html", context)
 
@@ -59,10 +68,13 @@ def add_to_watchlist(request, username, title):
 
     return HttpResponseRedirect(reverse("watchlist", args=[username]))
 
-def remove_from_watchlist(request, username, title):
+def remove_from_watchlist(request, title):
+    listingItem = Listing.objects.get(title = title).pk
+    userID = request.user.pk
+    userWatchlist = Watchlist.objects.get(user = userID)
+    userWatchlist.listing.remove(listingItem)
 
-
-    return HttpResponseRedirect(reverse("watchlist", args=[username]))
+    return HttpResponseRedirect(reverse("watchlist", args=[request.user]))
 
 
 def login_view(request):

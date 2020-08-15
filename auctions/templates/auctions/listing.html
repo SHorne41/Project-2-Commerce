@@ -5,10 +5,17 @@
 <h2>Listing: {{listing.title}}</h2>
 
 {% if user.is_authenticated %}
-<form action="{% url 'add' user.username listing.title %}" method="POST">
-    {% csrf_token %}
-    <button type="submit">Add to Watchlist</button><br/>
-</form>
+    {% if watching == False %}
+        <form action="{% url 'add' user.username listing.title %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Add to Watchlist</button><br/>
+        </form>
+    {% else %}
+        <form action="{% url 'remove' listing.title %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Remove from Watchlist</button><br/>
+        </form>
+    {% endif %}
 {% endif %}
 
 <img style="width: 200px; height: 200px; margin: 20px;" src="{{listing.image}}">
