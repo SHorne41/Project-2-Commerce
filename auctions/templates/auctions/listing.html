@@ -5,22 +5,38 @@
 <h2>Listing: {{listing.title}}</h2>
 
 {% if user.is_authenticated %}
-    {% if watching == False %}
-        <form action="{% url 'add' listing.title %}" method="POST">
+    {% if owner == False %}
+        {% if watching == False %}
+            <form action="{% url 'add' listing.title %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Add to Watchlist</button><br/>
+            </form>
+        {% else %}
+            <form action="{% url 'remove' listing.title %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Remove from Watchlist</button><br/>
+            </form>
+        {% endif %}
+    {% elif owner == True %}
+        <form action="#" method="POST">
             {% csrf_token %}
-            <button type="submit">Add to Watchlist</button><br/>
-        </form>
-    {% else %}
-        <form action="{% url 'remove' listing.title %}" method="POST">
-            {% csrf_token %}
-            <button type="submit">Remove from Watchlist</button><br/>
+            <button type="submit">Close Listing</button><br/>
         </form>
     {% endif %}
 {% endif %}
 
 <img style="width: 200px; height: 200px; margin: 20px;" src="{{listing.image}}">
 <p>{{listing.description}}</p>
-<h2>${{listing.bid}}.00</h2>
+<h2>Current bid: ${{listing.currentBid}}.00</h2>
+
+
+{% if owner == False %}
+    <form action="{% url 'bid' listing.title %}" method="POST">
+        {% csrf_token %}
+        <input type="number" name="bid" value="{{listing.bid}}">
+        <button type="submit">Place bid</button>
+    </form>
+{% endif %}
 
 <h3>Details</h3>
 <ul>

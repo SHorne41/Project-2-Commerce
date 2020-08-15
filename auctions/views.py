@@ -39,15 +39,33 @@ def listing_view(request, title):
     currentListing = Listing.objects.get(title=title)           # Listing to be displayed
     userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
     isWatching = False                                          # Used for context
+    isOwner = True                                              # Used for context
 
-    #Determine if the item is on the current user's watchlist
-    if userWatchlist.listing.filter(title=title):
-        isWatching = True
+    #Determine if the current user is the owner of the listing
+    if currentListing.owner != request.user:
+        isOwner = False
+        #Determine if the item is on the current user's watchlist
+        if userWatchlist.listing.filter(title=title):
+            isWatching = True
 
-    context = {"listing": currentListing, "watching" : isWatching}
+    context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner}
 
     return render(request, "auctions/listing.html", context)
 
+def place_bid(request, title):
+    currentListing = Listing.objects.get(title=title)
+    currentBid = currentListing.currentBid
+    pendingBid = request.POST["bid"]
+
+    #Check to see if new bid is greater than current bid
+    if int(pendingBid) <= currentBid:
+        #throw Error
+        return HttpResponseRedirect(reverse("listing", args=[title]))  #Remove after error code is inserted
+    else:
+        currentListing.bid = pendingBid
+        currentListing.save()
+
+    return HttpResponseRedirect(reverse("listing", args=[title]))
 
 def watchlist(request):
     userID = User.objects.get(username = request.user).pk
