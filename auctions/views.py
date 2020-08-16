@@ -10,7 +10,8 @@ from .forms import ListingForm, BidForm
 
 def index(request):
     listingsList = Listing.objects.all()
-    context = {"title": "Active Listings", "listings": listingsList}
+    activeListings = listingsList.filter(open=True)
+    context = {"title": "Active Listings", "listings": activeListings}
     return render(request, "auctions/index.html", context)
 
 
@@ -36,20 +37,26 @@ def createNewListing(request):
 def listing_view(request, title):
     currentListing = Listing.objects.get(title=title)           # Listing to be displayed
     userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
+    isActive = False                                            # Used for context
     isWatching = False                                          # Used for context
     isOwner = True                                              # Used for context
+
+    #Determine if the listing is active
+    if currentListing.open == True:
+        isActive = True
 
     #Determine if the current user is the owner of the listing
     if currentListing.owner != request.user:
         isOwner = False
-        #Determine if the item is on the current user's watchlist
-        if userWatchlist.listing.filter(title=title):
-            isWatching = True
+
+    #Determine if the item is on the current user's watchlist
+    if userWatchlist.listing.filter(title=title):
+        isWatching = True
 
     #Create bidForm and pass in context
     newBidForm = BidForm(initial={'user': request.user, 'listing': currentListing.pk})
 
-    context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner, "form": newBidForm}
+    context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm}
 
     return render(request, "auctions/listing.html", context)
 
