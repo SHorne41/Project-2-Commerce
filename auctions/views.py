@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Watchlist
+from .models import User, Listing, Watchlist, Bid
 from .forms import ListingForm, BidForm
 
 
@@ -47,7 +47,7 @@ def listing_view(request, title):
             isWatching = True
 
     #Create bidForm and pass in context
-    newBidForm = BidForm(initial={'user': request.user})
+    newBidForm = BidForm(initial={'user': request.user, 'listing': currentListing.pk})
 
     context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner, "form": newBidForm}
 
@@ -57,7 +57,7 @@ def place_bid(request, title):
     if request.method == 'POST':
         currentListing = Listing.objects.get(title=title)
         currentBid = currentListing.currentBid
-        newBidForm = BidForm(request.POST, initial={'user': request.user.id})
+        newBidForm = BidForm(request.POST, initial={'user': request.user.id, 'listing': currentListing.pk})
 
         if newBidForm.is_valid():
             newBidData = newBidForm.cleaned_data
@@ -70,6 +70,26 @@ def place_bid(request, title):
                 currentListing.currentBid = newBidData['bidAmount']
                 currentListing.save()
                 newBid = newBidForm.save()
+
+    return HttpResponseRedirect(reverse("listing", args=[title]))
+
+def close_listing(request, title):
+    #Retrieve the listing and set it to close
+    currentListing = Listing.objects.get(title=title)
+    currentListing.open = False
+
+    #Retrieve the bids on the current listing to determine the winner'
+    listingBids = Bid.objects.filter(listing = currentListing)
+    for bid in listingBids:
+        bidAmount = bid.bidAmount
+        if bidAmount == currentListing.currentBid:
+            listingWinner = bid.user
+
+    print(listingWinner)
+
+    #Set the listingWinner as the new owner of the listing
+    currentListing.owner = listingWinner
+    currentListing.save()
 
     return HttpResponseRedirect(reverse("listing", args=[title]))
 

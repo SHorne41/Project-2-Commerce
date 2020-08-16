@@ -18,7 +18,7 @@
             </form>
         {% endif %}
     {% elif owner == True %}
-        <form action="#" method="POST">
+        <form action="{% url 'close' listing.title %}" method="POST">
             {% csrf_token %}
             <button type="submit">Close Listing</button><br/>
         </form>
