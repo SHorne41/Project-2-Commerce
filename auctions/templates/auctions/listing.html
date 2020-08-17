@@ -32,7 +32,7 @@
 
 {% if active == True %}
     <h2>Current bid: ${{listing.currentBid}}.00</h2>
-    {% if owner == False %}
+    {% if owner == False and user.is_authenticated %}
         <form action="{% url 'bid' listing.title %}" method="POST">
             {% csrf_token %}
             {{ form }}
