@@ -4,7 +4,7 @@ from .models import Listing, Bid, Comment, Watchlist
 class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ['title', 'description', 'category', 'image', 'currentBid', 'owner']
+        fields = ['title', 'description', 'image', 'currentBid', 'owner']
         widgets = {
             'owner': forms.HiddenInput()
         }

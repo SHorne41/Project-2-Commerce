@@ -14,10 +14,22 @@ def index(request):
     context = {"title": "Active Listings", "listings": activeListings}
     return render(request, "auctions/index.html", context)
 
+def categories_view(request):
+    listingsList = Listing.objects.all()
+    categories = []
+
+    for listing in listingsList:
+        if listing.category not in categories:
+            categories.append(listing.category)
+
+    context = {"categories": categories}
+    return render(request, "auctions/categories.html", context)
+
 
 def newForm(request):
     newListingForm = ListingForm(initial={'owner': request.user})
-    context = {'form': newListingForm}
+    newCategoryForm = CategoryForm(initial={'listing': newListingForm})
+    context = {'form': newListingForm, 'categoryForm': newCategoryForm}
 
     return render(request, "auctions/newListing.html", context)
 
