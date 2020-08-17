@@ -23,6 +23,7 @@ class Watchlist(models.Model):
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
     comment = models.TextField()
 
 class Bid(models.Model):
