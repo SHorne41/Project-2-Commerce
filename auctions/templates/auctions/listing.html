@@ -52,5 +52,16 @@
     <h2>This listing is closed</h2>
 {% endif %}
 
+<h2>Comments</h2>
+<div class="list-group">
+{% if comments != None %}
+    {% for comment in comments %}
+        <div class="list-group-item">
+            <p><strong>{{comment.user}} says:</strong></p>
+            <p>{{comment.comment}}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+</div>
 
 {% endblock %}

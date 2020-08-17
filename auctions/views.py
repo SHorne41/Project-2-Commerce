@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Watchlist, Bid
+from .models import User, Listing, Watchlist, Bid, Comment
 from .forms import ListingForm, BidForm
 
 
@@ -36,6 +36,11 @@ def createNewListing(request):
 
 def listing_view(request, title):
     currentListing = Listing.objects.get(title=title)           # Listing to be displayed
+    listingComments = None
+
+    #Determine if the current listing has any comments
+    if Comment.objects.filter(listing=currentListing.pk).exists():
+        listingComments = Comment.objects.filter(listing=currentListing.pk)
 
     isActive = False                                            # Used for context
     isWatching = False                                          # Used for context
@@ -60,7 +65,7 @@ def listing_view(request, title):
     #Create bidForm and pass in context
     newBidForm = BidForm(initial={'user': request.user, 'listing': currentListing.pk})
 
-    context = {"listing": currentListing, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm}
+    context = {"listing": currentListing, "comments": listingComments, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm}
 
     return render(request, "auctions/listing.html", context)
 
