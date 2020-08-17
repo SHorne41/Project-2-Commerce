@@ -25,6 +25,15 @@ def categories_view(request):
     context = {"categories": categories}
     return render(request, "auctions/categories.html", context)
 
+def single_category_view(request, category):
+    categoryListings = Listing.objects.filter(category=category)
+    activeListings = categoryListings.filter(open=True)
+    title = category + " Listings"
+    context = {"title": title, "listings": activeListings}
+
+    return render(request, "auctions/index.html", context)
+
+
 
 def newForm(request):
     newListingForm = ListingForm(initial={'owner': request.user})

@@ -5,7 +5,7 @@
 <h2>Categories</h2>
 <ul>
     {% for category in categories %}
-    <li>{{category}}</li>
+    <li><a href="{% url 'showCategory' category %}">{{category}}</a></li>
     {% endfor %}
 </ul>
 {% endblock %}
