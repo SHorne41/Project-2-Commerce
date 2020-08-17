@@ -62,6 +62,15 @@
         </div>
     {% endfor %}
 {% endif %}
-</div>
+</div><br/>
+
+{% if user.is_authenticated %}
+    <h2>Say something about this item...</h2>
+    <form action="{% url 'postComment' listing.title %}" method="POST">
+        {% csrf_token %}
+        {{commentForm}}
+        <br/><button type="submit">Post comment</button>
+    </form>
+{% endif %}
 
 {% endblock %}

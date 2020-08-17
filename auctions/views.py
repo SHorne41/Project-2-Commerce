@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Listing, Watchlist, Bid, Comment
-from .forms import ListingForm, BidForm
+from .forms import ListingForm, BidForm, CommentForm
 
 
 def index(request):
@@ -58,16 +58,26 @@ def listing_view(request, title):
         if currentListing.owner == request.user:
             isOwner = True
 
+
     #Determine if the listing is active
     if currentListing.open == True:
         isActive = True
 
-    #Create bidForm and pass in context
+    #Create bidForm/commentForm and pass in context
     newBidForm = BidForm(initial={'user': request.user, 'listing': currentListing.pk})
+    newCommentForm = CommentForm(initial={'user': request.user, 'listing': currentListing.pk})
 
-    context = {"listing": currentListing, "comments": listingComments, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm}
+    context = {"listing": currentListing, "comments": listingComments, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm, "commentForm": newCommentForm}
 
     return render(request, "auctions/listing.html", context)
+
+def post_comment(request, title):
+    if request.method == 'POST':
+        currentListing = Listing.objects.get(title=title)
+        newCommentForm = CommentForm(request.POST, initial={'user': request.user.id, 'listing': currentListing.pk})
+        newComment = newCommentForm.save()
+
+    return HttpResponseRedirect(reverse("listing", args=[title]))
 
 def place_bid(request, title):
     if request.method == 'POST':
@@ -78,7 +88,6 @@ def place_bid(request, title):
         if newBidForm.is_valid():
             newBidData = newBidForm.cleaned_data
             #Check to see if new bid is greater than current bid
-            print(newBidData['bidAmount'])
             if newBidData['bidAmount'] <= currentBid:
                 #throw Error
                 return HttpResponseRedirect(reverse("listing", args=[title]))  #Remove after error code is inserted

@@ -21,8 +21,11 @@ class BidForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['user', 'comment', 'listing']
+        fields = ['user', 'listing', 'comment']
         widgets = {
             'user': forms.HiddenInput(),
-            'listing': forms.HiddenInput()
+            'listing': forms.HiddenInput(),
+        }
+        labels = {
+            'comment': ''
         }
