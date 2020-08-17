@@ -39,19 +39,19 @@ def listing_view(request, title):
 
     isActive = False                                            # Used for context
     isWatching = False                                          # Used for context
-    isOwner = False                                              # Used for context
-
-    print("Username: " + request.user.username)
+    isOwner = False                                             # Used for context
 
     # Is the user currently signed into an account
     if request.user.username != "":
-        userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
+        #Determine if the current user has a watchlist
+        if Watchlist.objects.filter(user=request.user).exists():
+            userWatchlist = Watchlist.objects.filter(user=request.user)    # Current User's watchlist
+            #Determine if the item is on the current user's watchlist
+            if userWatchlist.listing.filter(title=title):
+                isWatching = True
         #Determine if the current user is the owner of the listing
         if currentListing.owner == request.user:
             isOwner = True
-        #Determine if the item is on the current user's watchlist
-        if userWatchlist.listing.filter(title=title):
-            isWatching = True
 
     #Determine if the listing is active
     if currentListing.open == True:
