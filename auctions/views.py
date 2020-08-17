@@ -51,7 +51,7 @@ def listing_view(request, title):
     if request.user.username != "":
         #Determine if the current user has a watchlist
         if Watchlist.objects.filter(user=request.user).exists():
-            userWatchlist = Watchlist.objects.filter(user=request.user)    # Current User's watchlist
+            userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
             #Determine if the item is on the current user's watchlist
             if userWatchlist.listing.filter(title=title):
                 isWatching = True
