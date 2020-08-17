@@ -1,5 +1,5 @@
 from django import forms
-from .models import Listing, Bid, Comment
+from .models import Listing, Bid, Comment, Watchlist
 
 class ListingForm(forms.ModelForm):
     class Meta:
@@ -28,4 +28,13 @@ class CommentForm(forms.ModelForm):
         }
         labels = {
             'comment': ''
+        }
+
+class WatchlistForm(forms.ModelForm):
+    class Meta:
+        model = Watchlist
+        fields = ['user', 'listing']
+        widgets = {
+            'user': forms.HiddenInput(),
+            'listing': forms.HiddenInput()
         }

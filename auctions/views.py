@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Listing, Watchlist, Bid, Comment
-from .forms import ListingForm, BidForm, CommentForm
+from .forms import ListingForm, BidForm, CommentForm, WatchlistForm
 
 
 def index(request):
@@ -45,6 +45,7 @@ def listing_view(request, title):
     isActive = False                                            # Used for context
     isWatching = False                                          # Used for context
     isOwner = False                                             # Used for context
+    newWatchlistForm = None                                     #USed for context
 
     # Is the user currently signed into an account
     if request.user.username != "":
@@ -54,6 +55,8 @@ def listing_view(request, title):
             #Determine if the item is on the current user's watchlist
             if userWatchlist.listing.filter(title=title):
                 isWatching = True
+        else:
+            newWatchlistForm = WatchlistForm(initial={'user': request.user, 'listing': currentListing})     #Used in the event the current user doesn't have a watchlist
         #Determine if the current user is the owner of the listing
         if currentListing.owner == request.user:
             isOwner = True
@@ -67,7 +70,7 @@ def listing_view(request, title):
     newBidForm = BidForm(initial={'user': request.user, 'listing': currentListing.pk})
     newCommentForm = CommentForm(initial={'user': request.user, 'listing': currentListing.pk})
 
-    context = {"listing": currentListing, "comments": listingComments, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm, "commentForm": newCommentForm}
+    context = {"listing": currentListing, "comments": listingComments, "watching" : isWatching, "owner": isOwner, "active": isActive, "form": newBidForm, "commentForm": newCommentForm, 'watchlistForm': newWatchlistForm}
 
     return render(request, "auctions/listing.html", context)
 
@@ -129,8 +132,20 @@ def watchlist(request):
 def add_to_watchlist(request, title):
     listingItem = Listing.objects.get(title = title).pk
     userID = User.objects.get(username = request.user).pk
-    userWatchlist = Watchlist.objects.get(user = userID)
-    userWatchlist.listing.add(listingItem)
+
+    #Determine if the user currently has a watchlist
+    if Watchlist.objects.filter(user = userID).exists():
+        userWatchlist = Watchlist.objects.get(user = userID)
+        userWatchlist.listing.add(listingItem)
+    else:
+        userWatchlist = WatchlistForm(request.POST, initial={'user': userID, 'listing': listingItem})
+        print("creating watchlist")
+        if userWatchlist.is_valid():
+            newWatchlist = userWatchlist.save()
+            print("Watchlist created")
+        else:
+            print(userWatchlist.errors)
+
 
     return HttpResponseRedirect(reverse("watchlist"))
 

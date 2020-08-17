@@ -10,6 +10,9 @@
             {% if watching == False %}
                 <form action="{% url 'add' listing.title %}" method="POST">
                     {% csrf_token %}
+                    {% if watchlistForm != None %}
+                        {{watchlistForm}}
+                    {% endif %}
                     <button type="submit">Add to Watchlist</button><br/>
                 </form>
             {% else %}
