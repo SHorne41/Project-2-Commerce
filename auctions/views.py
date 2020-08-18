@@ -33,12 +33,9 @@ def single_category_view(request, category):
 
     return render(request, "auctions/index.html", context)
 
-
-
 def newForm(request):
     newListingForm = ListingForm(initial={'owner': request.user})
-    newCategoryForm = CategoryForm(initial={'listing': newListingForm})
-    context = {'form': newListingForm, 'categoryForm': newCategoryForm}
+    context = {'form': newListingForm}
 
     return render(request, "auctions/newListing.html", context)
 
@@ -148,7 +145,6 @@ def watchlist(request):
     context = {"title": "Watchlist", "listings": watchListItems}
 
     return render(request, "auctions/index.html", context)
-
 
 def add_to_watchlist(request, title):
     listingItem = Listing.objects.get(title = title).pk
