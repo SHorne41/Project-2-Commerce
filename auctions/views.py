@@ -69,12 +69,12 @@ def listing_view(request, title):
     if request.user.username != "":
         #Determine if the current user has a watchlist
         if Watchlist.objects.filter(user=request.user).exists():
-            userWatchlist = Watchlist.objects.get(user=request.user)    # Current User's watchlist
+            userWatchlist = Watchlist.objects.filter(user=request.user)    # Current User's watchlist
             #Determine if the item is on the current user's watchlist
-            if userWatchlist.listing.filter(title=title):
+            if userWatchlist.filter(listing=currentListing.pk):
                 isWatching = True
-        else:
-            newWatchlistForm = WatchlistForm(initial={'user': request.user, 'listing': currentListing})     #Used in the event the current user doesn't have a watchlist
+
+        newWatchlistForm = WatchlistForm(initial={'user': request.user, 'listing': currentListing})     #Used in the event the current user doesn't have a watchlist
         #Determine if the current user is the owner of the listing
         if currentListing.owner == request.user:
             isOwner = True
@@ -140,37 +140,31 @@ def close_listing(request, title):
     return HttpResponseRedirect(reverse("listing", args=[title]))
 
 def watchlist(request):
-    userID = User.objects.get(username = request.user).pk
-    watchListItems = Watchlist.objects.get(user = userID).listing.all()
+    userID = request.user.pk
+    watchList = Watchlist.objects.filter(user = userID)
+    print(watchList)
+    watchListItems = []
+    for item in watchList:
+        watchListItems.append(item.listing)
     context = {"title": "Watchlist", "listings": watchListItems}
 
     return render(request, "auctions/index.html", context)
 
 def add_to_watchlist(request, title):
-    listingItem = Listing.objects.get(title = title).pk
     userID = User.objects.get(username = request.user).pk
-
-    #Determine if the user currently has a watchlist
-    if Watchlist.objects.filter(user = userID).exists():
-        userWatchlist = Watchlist.objects.get(user = userID)
-        userWatchlist.listing.add(listingItem)
+    userWatchlist = WatchlistForm(request.POST, initial={'user': userID, 'listing': Listing.objects.get(title = title)})
+    if userWatchlist.is_valid():
+        newWatchlist = userWatchlist.save()
     else:
-        userWatchlist = WatchlistForm(request.POST, initial={'user': userID, 'listing': listingItem})
-        print("creating watchlist")
-        if userWatchlist.is_valid():
-            newWatchlist = userWatchlist.save()
-            print("Watchlist created")
-        else:
-            print(userWatchlist.errors)
-
+        print(userWatchlist.errors)
 
     return HttpResponseRedirect(reverse("watchlist"))
 
 def remove_from_watchlist(request, title):
     listingItem = Listing.objects.get(title = title).pk
     userID = request.user.pk
-    userWatchlist = Watchlist.objects.get(user = userID)
-    userWatchlist.listing.remove(listingItem)
+    watchListItem = Watchlist.objects.get(user = userID, listing = listingItem)
+    watchListItem.delete()
 
     return HttpResponseRedirect(reverse("watchlist"))
 

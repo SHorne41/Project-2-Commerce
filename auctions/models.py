@@ -9,7 +9,7 @@ class Listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField()
     category = models.CharField(max_length=64)
-    image = models.CharField(max_length=300)
+    image = models.CharField(max_length=100)
     currentBid = models.IntegerField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     open = models.BooleanField(default = True)
@@ -18,7 +18,7 @@ class Listing(models.Model):
         return f"{self.title}, Current bid: {self.currentBid}"
 
 class Watchlist(models.Model):
-    listing = models.ManyToManyField(Listing)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Comment(models.Model):
